@@ -1,0 +1,15 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo circular verde -->
+  <circle cx="16" cy="16" r="16" fill="#22c55e"/>
+  
+  <!-- Hoja principal -->
+  <path d="M8 20c0-6 4-12 8-12s8 6 8 12c0 2-1 4-3 5-1 1-3 1-4 0-1-1-1-3 0-4 1-1 2-1 3 0" 
+        fill="#ffffff" stroke="#16a34a" stroke-width="1"/>
+  
+  <!-- Vena de la hoja -->
+  <path d="M16 8v12" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Pequeñas hojas laterales -->
+  <path d="M12 12c-1-1-2-1-3 0s-1 2 0 3" fill="#ffffff" stroke="#16a34a" stroke-width="0.8"/>
+  <path d="M20 14c1-1 2-1 3 0s1 2 0 3" fill="#ffffff" stroke="#16a34a" stroke-width="0.8"/>
+</svg>

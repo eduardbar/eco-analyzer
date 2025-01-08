@@ -1,0 +1,64 @@
+== Info: Host localhost:3001 was resolved.
+== Info: IPv6: ::1
+== Info: IPv4: 127.0.0.1
+== Info:   Trying [::1]:3001...
+== Info: Connected to localhost (::1) port 3001
+== Info: using HTTP/1.x
+=> Send header, 150 bytes (0x96)
+0000: POST /api/v1/auth/register HTTP/1.1
+0025: Host: localhost:3001
+003b: User-Agent: curl/8.13.0
+0054: Accept: */*
+0061: Content-Type: application/json
+0081: Content-Length: 2
+0094: 
+=> Send data, 2 bytes (0x2)
+0000: {\
+== Info: upload completely sent off: 2 bytes
+<= Recv header, 26 bytes (0x1a)
+0000: HTTP/1.1 400 Bad Request
+<= Recv header, 23 bytes (0x17)
+0000: X-Powered-By: Express
+<= Recv header, 52 bytes (0x34)
+0000: Access-Control-Allow-Origin: http://localhost:3000
+<= Recv header, 14 bytes (0xe)
+0000: Vary: Origin
+<= Recv header, 40 bytes (0x28)
+0000: Access-Control-Allow-Credentials: true
+<= Recv header, 45 bytes (0x2d)
+0000: Content-Security-Policy: default-src 'none'
+<= Recv header, 33 bytes (0x21)
+0000: X-Content-Type-Options: nosniff
+<= Recv header, 40 bytes (0x28)
+0000: Content-Type: text/html; charset=utf-8
+<= Recv header, 21 bytes (0x15)
+0000: Content-Length: 925
+<= Recv header, 37 bytes (0x25)
+0000: Date: Wed, 06 Aug 2025 23:22:49 GMT
+<= Recv header, 24 bytes (0x18)
+0000: Connection: keep-alive
+<= Recv header, 23 bytes (0x17)
+0000: Keep-Alive: timeout=5
+<= Recv header, 2 bytes (0x2)
+0000: 
+<= Recv data, 925 bytes (0x39d)
+0000: <!DOCTYPE html>.<html lang="en">.<head>.<meta charset="utf-8">.<
+0040: title>Error</title>.</head>.<body>.<pre>SyntaxError: Unexpected 
+0080: token \ in JSON at position 1<br> &nbsp; &nbsp;at JSON.parse (&l
+00c0: t;anonymous&gt;)<br> &nbsp; &nbsp;at parse (/app/node_modules/bo
+0100: dy-parser/lib/types/json.js:77:19)<br> &nbsp; &nbsp;at /app/node
+0140: _modules/body-parser/lib/read.js:123:18<br> &nbsp; &nbsp;at Asyn
+0180: cResource.runInAsyncScope (node:async_hooks:203:9)<br> &nbsp; &n
+01c0: bsp;at invokeCallback (/app/node_modules/raw-body/index.js:238:1
+0200: 6)<br> &nbsp; &nbsp;at done (/app/node_modules/raw-body/index.js
+0240: :227:7)<br> &nbsp; &nbsp;at IncomingMessage.onEnd (/app/node_mod
+0280: ules/raw-body/index.js:287:7)<br> &nbsp; &nbsp;at IncomingMessag
+02c0: e.emit (node:events:517:28)<br> &nbsp; &nbsp;at endReadableNT (n
+0300: ode:internal/streams/readable:1400:12)<br> &nbsp; &nbsp;at proce
+0340: ss.processTicksAndRejections (node:internal/process/task_queues:
+0380: 82:21)</pre>.</body>.</html>.
+== Info: Connection #0 to host localhost left intact
+== Info: URL rejected: Port number was not a decimal number between 0 and 65535
+== Info: closing connection #-1
+== Info: URL rejected: Bad hostname
+== Info: closing connection #-1

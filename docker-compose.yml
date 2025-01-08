@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # Servicio del Backend
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: analyzer-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: "file:/data/dev.db"
+      JWT_SECRET: "your_jwt_secret" # ¡Cambiar en producción!
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    volumes:
+      - ./backend/prisma/dev.db:/data/dev.db
+
+  # Servicio del Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: analyzer-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://backend:3001/api/v1"
