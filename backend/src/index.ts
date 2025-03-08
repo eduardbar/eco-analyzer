@@ -10,7 +10,11 @@ const port = process.env.PORT || 3001;
 
 // CORS configuration
 app.use(cors({
-  origin: 'http://localhost:3000', // Allow frontend origin
+  origin: [
+    'http://localhost:3000',
+    'https://frontend-fo5aadje5-eduardbars-projects.vercel.app',
+    'https://frontend-mop2f50nb-eduardbars-projects.vercel.app'
+  ],
   credentials: true
 }));
 
