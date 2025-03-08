@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+
 interface Material {
   materialName: string;
   sustainabilityScore: number;
@@ -54,7 +56,7 @@ export const useAnalysis = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3001/api/v1/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +95,7 @@ export const useAnalysis = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3001/api/v1/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +143,7 @@ export const useAnalysis = () => {
         throw new Error('No estás autenticado. Por favor inicia sesión.');
       }
 
-      const response = await fetch('http://localhost:3001/api/v1/analysis/analyze', {
+      const response = await fetch(`${API_BASE_URL}/analysis/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +192,7 @@ export const useAnalysis = () => {
         throw new Error('No estás autenticado. Por favor inicia sesión.');
       }
 
-      const response = await fetch('http://localhost:3001/api/v1/analysis', {
+      const response = await fetch(`${API_BASE_URL}/analysis`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
