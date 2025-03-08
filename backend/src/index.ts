@@ -13,7 +13,8 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://frontend-fo5aadje5-eduardbars-projects.vercel.app',
-    'https://frontend-mop2f50nb-eduardbars-projects.vercel.app'
+    'https://frontend-mop2f50nb-eduardbars-projects.vercel.app',
+    'https://eco-analyzer.bmtechlab.online'
   ],
   credentials: true
 }));
