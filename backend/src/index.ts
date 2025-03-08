@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import analysisRoutes from './routes/analysis.routes';
 import authRoutes from './auth/auth.routes';
@@ -20,7 +20,7 @@ app.use(cors({
 }));
 
 // Middleware de debugging
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${req.method} ${req.path} - Content-Type: ${req.get('Content-Type')}`);
   next();
 });
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 
 // Error handler para JSON malformado
-app.use((error: any, req: any, res: any, next: any) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   if (error instanceof SyntaxError && 'body' in error) {
     console.error('JSON Syntax Error:', error.message);
     return res.status(400).json({ error: 'Invalid JSON format' });

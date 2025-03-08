@@ -4,5 +4,5 @@ export interface AuthenticatedRequest extends Request {
         id: number;
     };
 }
-export declare const authMiddleware: (req: AuthenticatedRequest, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
+export declare const authMiddleware: (req: Request, res: Response, next: NextFunction) => Response<any, Record<string, any>> | undefined;
 //# sourceMappingURL=auth.middleware.d.ts.map

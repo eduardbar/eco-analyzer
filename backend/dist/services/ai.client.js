@@ -16,7 +16,7 @@ class AIClient {
     }
     static async getAnalysis(description) {
         const gemini = AIClient.getGeminiClient();
-        const model = gemini.getGenerativeModel({ model: "gemini-pro" });
+        const model = gemini.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `Eres un experto en análisis del ciclo de vida de productos de consumo. Analiza la siguiente descripción y responde ÚNICAMENTE con un objeto JSON válido. No incluyas texto antes o después del JSON.
 
 Descripción del producto: "${description}"

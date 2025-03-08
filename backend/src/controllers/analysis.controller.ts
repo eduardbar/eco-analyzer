@@ -1,11 +1,11 @@
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import type { AuthenticatedRequest } from '../auth/auth.middleware';
 import { prisma } from '../lib/prisma';
 import { analysisService } from '../services/analysis.service';
 
-export const handleAnalyzeProduct = async (req: AuthenticatedRequest, res: Response) => {
+export const handleAnalyzeProduct = async (req: Request, res: Response) => {
     const { description } = req.body;
-    const userId = req.user?.id;
+    const userId = (req as AuthenticatedRequest).user?.id;
 
     if (!description) {
         return res.status(400).json({ error: 'La descripción es obligatoria.' });
@@ -24,8 +24,8 @@ export const handleAnalyzeProduct = async (req: AuthenticatedRequest, res: Respo
     }
 };
 
-export const getAnalysisHistory = async (req: AuthenticatedRequest, res: Response) => {
-    const userId = req.user?.id;
+export const getAnalysisHistory = async (req: Request, res: Response) => {
+    const userId = (req as AuthenticatedRequest).user?.id;
 
     if (!userId) {
         return res.status(401).json({ error: 'Usuario no autenticado.' });
