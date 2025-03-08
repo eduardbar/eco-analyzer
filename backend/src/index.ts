@@ -10,12 +10,16 @@ const port = process.env.PORT || 3001;
 
 // CORS configuration
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://frontend-fo5aadje5-eduardbars-projects.vercel.app',
-    'https://frontend-mop2f50nb-eduardbars-projects.vercel.app',
-    'https://eco-analyzer.bmtechlab.online'
-  ],
+  origin: (origin, callback) => {
+    // Permitir localhost para desarrollo
+    if (!origin || origin.startsWith('http://localhost')) return callback(null, true);
+    // Permitir cualquier subdominio de vercel.app
+    if (/\.vercel\.app$/.test(origin)) return callback(null, true);
+    // Permitir dominio personalizado
+    if (origin === 'https://eco-analyzer.bmtechlab.online') return callback(null, true);
+    // Si no está permitido
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
