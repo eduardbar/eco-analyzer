@@ -6,10 +6,15 @@ WORKDIR /app
 
 # Copia los archivos del backend
 COPY backend/package*.json ./
-RUN npm ci --only=production
+
+# Instala todas las dependencias (incluyendo devDependencies para build)
+RUN npm install
 
 # Copia el código fuente
 COPY backend/ ./
+
+# Genera el cliente de Prisma
+RUN npx prisma generate
 
 # Compila TypeScript
 RUN npm run build
@@ -18,4 +23,4 @@ RUN npm run build
 EXPOSE 3001
 
 # Comando para iniciar la aplicación
-CMD ["npm", "start"]
+CMD ["npm", "run", "start:prod"]
