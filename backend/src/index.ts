@@ -36,6 +36,15 @@ app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   next(error);
 });
 
+// Health check endpoint
+app.get('/api/v1/health', (req: Request, res: Response) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'EcoAnalyzer API is running',
+    timestamp: new Date().toISOString() 
+  });
+});
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/analysis', authMiddleware, analysisRoutes);
 
