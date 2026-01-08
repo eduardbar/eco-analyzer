@@ -44,14 +44,22 @@ export class GeminiAIProvider implements IAIProvider {
   }
 
   async analyze(description: string): Promise<AIAnalysisResponse> {
-    const model = this.genAI.getGenerativeModel({ model: this.modelName });
-    const prompt = ANALYSIS_PROMPT.replace('{DESCRIPTION}', description);
+    try {
+      const model = this.genAI.getGenerativeModel({ model: this.modelName });
+      const prompt = ANALYSIS_PROMPT.replace('{DESCRIPTION}', description);
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
 
-    return this.parseResponse(text);
+      return this.parseResponse(text);
+    } catch (error: unknown) {
+      // Manejar errores de cuota específicamente
+      if (error instanceof Error && error.message.includes('429')) {
+        throw new Error('Se ha excedido la cuota de la API de IA. Por favor, intenta de nuevo más tarde o contacta al administrador.');
+      }
+      throw error;
+    }
   }
 
   private parseResponse(text: string): AIAnalysisResponse {
