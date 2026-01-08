@@ -1,0 +1,18 @@
+{
+  "$schema": "https://render.com/data/v1/schema.json",
+  "services": {
+    "type": "web",
+    "name": "eco-analyzer-backend",
+    "runtime": "node",
+    "plan": "free",
+    "buildCommand": "npm install && npm run build",
+    "startCommand": "npm start",
+    "envVars": {
+      "DATABASE_URL": "file:./dev.db",
+      "PORT": "3001",
+      "JWT_SECRET": "dev_jwt_secret_change_in_production",
+      "GEMINI_API_KEY": "",
+      "NODE_ENV": "production"
+    }
+  }
+}

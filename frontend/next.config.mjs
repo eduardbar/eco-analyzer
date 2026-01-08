@@ -5,7 +5,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://eco-analyzer-production.up.railway.app/api/:path*',
+        destination: 'https://eco-analyzer-backend.onrender.com/api/:path*',
       },
     ]
   },

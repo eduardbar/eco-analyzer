@@ -55,7 +55,7 @@ export const corsConfig = {
     'http://localhost:3000',
     'http://localhost:3001',
     /\.vercel\.app$/,
-    'https://eco-analyzer.bmtechlab.online',
+    'https://eco-analyzer-backend.onrender.com',
   ] as (string | RegExp)[],
   credentials: true,
 } as const;
