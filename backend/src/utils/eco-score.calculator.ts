@@ -1,36 +1,65 @@
-interface AIResponseForEcoScore {
-  estimatedCarbonFootprintKg: number;
-  estimatedWaterUsageLiters: number;
-  materialsAnalysis: {
-    sustainabilityScore: number;
-  }[];
+/**
+ * Calculadora de Eco-Score.
+ * 
+ * Convierte métricas de impacto ambiental en un score normalizado de 0-10.
+ * Mayor score = Mejor para el medio ambiente.
+ */
+
+import { ecoScoreConfig } from '../config';
+import type { EcoScoreInput } from '../types';
+
+/**
+ * Normaliza un valor a un porcentaje invertido (menor valor = mejor score).
+ */
+function normalizeInverse(value: number, maxValue: number): number {
+  const clampedValue = Math.min(value, maxValue);
+  return 100 - (clampedValue / maxValue) * 100;
 }
 
-export const calculateEcoScore = (aiResponse: AIResponseForEcoScore): number => {
-  const MAX_CARBON = 500; // Valor máximo de huella de carbono para normalización
-  const MAX_WATER = 2000; // Valor máximo de uso de agua para normalización
+/**
+ * Calcula el score promedio de materiales.
+ */
+function calculateMaterialsAverageScore(
+  materials: Pick<{ sustainabilityScore: number }, 'sustainabilityScore'>[]
+): number {
+  if (materials.length === 0) return 0;
 
-  // Normalización de Huella de Carbono (0-100)
-  const carbonScore = 100 - (Math.min(aiResponse.estimatedCarbonFootprintKg, MAX_CARBON) / MAX_CARBON) * 100;
-
-  // Normalización de Uso de Agua (0-100)
-  const waterScore = 100 - (Math.min(aiResponse.estimatedWaterUsageLiters, MAX_WATER) / MAX_WATER) * 100;
-
-  // Puntuación de Materiales (0-100)
-  const totalMaterialScore = aiResponse.materialsAnalysis.reduce((sum, material) => sum + material.sustainabilityScore, 0);
-  const materialsScore = (totalMaterialScore / aiResponse.materialsAnalysis.length) * 10; // Promedio y escala a 0-100
-
-  // Ponderación
-  const WEIGHT_CARBON = 0.4;
-  const WEIGHT_WATER = 0.3;
-  const WEIGHT_MATERIALS = 0.3;
-
-  const ecoScore = (
-    (carbonScore * WEIGHT_CARBON) +
-    (waterScore * WEIGHT_WATER) +
-    (materialsScore * WEIGHT_MATERIALS)
+  const totalScore = materials.reduce(
+    (sum, material) => sum + material.sustainabilityScore,
+    0
   );
 
-  // Asegurarse de que la puntuación esté entre 0 y 10
-  return Math.max(0, Math.min(10, ecoScore / 10));
-};
+  // Convertir de escala 0-10 a 0-100
+  return (totalScore / materials.length) * 10;
+}
+
+/**
+ * Calcula el Eco-Score basado en huella de carbono, uso de agua y materiales.
+ * 
+ * @param input - Datos de análisis de la IA
+ * @returns Score de 0-10 (mayor = mejor)
+ */
+export function calculateEcoScore(input: EcoScoreInput): number {
+  const { maxCarbonFootprint, maxWaterUsage, weights } = ecoScoreConfig;
+
+  const carbonScore = normalizeInverse(
+    input.estimatedCarbonFootprintKg,
+    maxCarbonFootprint
+  );
+
+  const waterScore = normalizeInverse(
+    input.estimatedWaterUsageLiters,
+    maxWaterUsage
+  );
+
+  const materialsScore = calculateMaterialsAverageScore(input.materialsAnalysis);
+
+  const weightedScore =
+    carbonScore * weights.carbon +
+    waterScore * weights.water +
+    materialsScore * weights.materials;
+
+  // Normalizar a escala 0-10 y asegurar límites
+  const finalScore = weightedScore / 10;
+  return Math.max(0, Math.min(10, Number(finalScore.toFixed(2))));
+}

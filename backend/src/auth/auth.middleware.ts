@@ -1,22 +1,71 @@
+/**
+ * Middleware de autenticación JWT.
+ */
+
 import type { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import { config } from '../config';
+import type { JWTPayload } from '../types';
+
+// ============================================================================
+// TIPOS
+// ============================================================================
 
 export interface AuthenticatedRequest extends Request {
-  user?: { id: number };
+  user: { id: number };
 }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1];
+// ============================================================================
+// MIDDLEWARE
+// ============================================================================
+
+/**
+ * Verifica el token JWT y añade el usuario al request.
+ */
+export function authMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Token no proporcionado' });
+    return;
+  }
+
+  const token = authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
+    res.status(401).json({ error: 'Token malformado' });
+    return;
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret') as { userId: number };
+    const decoded = jwt.verify(token, config.jwtSecret) as unknown as JWTPayload;
     (req as AuthenticatedRequest).user = { id: decoded.userId };
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    if (error instanceof jwt.TokenExpiredError) {
+      res.status(401).json({ error: 'Token expirado' });
+      return;
+    }
+    res.status(401).json({ error: 'Token inválido' });
   }
-};
+}
+
+// ============================================================================
+// UTILIDADES
+// ============================================================================
+
+/**
+ * Extrae el usuario autenticado del request.
+ * Lanza error si no está autenticado (usar después de authMiddleware).
+ */
+export function getAuthenticatedUser(req: Request): { id: number } {
+  const user = (req as AuthenticatedRequest).user;
+  if (!user) {
+    throw new Error('Usuario no autenticado');
+  }
+  return user;
+}

@@ -1,85 +1,121 @@
-import React, { useState } from 'react';
+/**
+ * Formulario de inicio de sesión.
+ */
+
+'use client';
+
+import { useState, FormEvent } from 'react';
 
 interface LoginFormProps {
   onLogin: (email: string, password: string) => Promise<void>;
-  onSwitchToRegister: () => void;
+  onSwitchToRegister?: () => void;
   isLoading: boolean;
 }
 
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onSwitchToRegister, isLoading }) => {
+export default function LoginForm({ onLogin, isLoading }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const isValid = email.trim().length > 0 && password.trim().length > 0;
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) return;
-    await onLogin(email, password);
+    if (!isValid) return;
+
+    setError(null);
+    try {
+      await onLogin(email.trim(), password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <input
-            type="email"
-            className="w-full p-4 bg-white/5 text-white rounded-2xl border border-white/10 focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-300 placeholder-gray-400 backdrop-blur-sm"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-            required
-          />
-        </div>
+    <form 
+      onSubmit={handleSubmit} 
+      className="flex flex-col h-full justify-center space-y-6 animate-in fade-in duration-500"
+    >
+      <div className="space-y-5">
+        <InputField
+          label="Email Corporativo"
+          type="email"
+          placeholder="nombre@empresa.com"
+          value={email}
+          onChange={setEmail}
+          disabled={isLoading}
+          required
+        />
 
-        <div>
-          <input
-            type="password"
-            className="w-full p-4 bg-white/5 text-white rounded-2xl border border-white/10 focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-300 placeholder-gray-400 backdrop-blur-sm"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-            required
-          />
-        </div>
+        <InputField
+          label="Contraseña de Acceso"
+          type="password"
+          placeholder="••••••••••••"
+          value={password}
+          onChange={setPassword}
+          disabled={isLoading}
+          required
+        />
       </div>
 
-      <button
-        type="submit" 
-        disabled={isLoading || !email.trim() || !password.trim()} 
-        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-4 px-6 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
-      >
-        {isLoading ? (
-          <div className="flex items-center justify-center space-x-2">
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Iniciando sesión...</span>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center space-x-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-            </svg>
-            <span>Iniciar Sesión</span>
-          </div>
-        )}
-      </button>
+      {error && (
+        <p className="text-red-400 text-sm text-center">{error}</p>
+      )}
 
-      <div className="text-center">
-        <span className="text-gray-400 text-sm">¿No tienes cuenta? </span>
+      <div className="pt-4">
         <button
-          type="button"
-          onClick={onSwitchToRegister}
-          className="text-purple-400 hover:text-purple-300 transition-colors duration-300 text-sm font-medium"
-          disabled={isLoading}
+          type="submit" 
+          disabled={isLoading || !isValid} 
+          className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-orange-500/20"
         >
-          Regístrate aquí
+          {isLoading ? 'Autenticando...' : 'Acceder al Dashboard'}
         </button>
       </div>
+      
+      <p className="text-center text-xs text-white/30 mt-4">
+        Acceso seguro encriptado de extremo a extremo
+      </p>
     </form>
   );
-};
+}
 
-export default LoginForm;
+// ============================================================================
+// SUBCOMPONENTES
+// ============================================================================
+
+interface InputFieldProps {
+  label: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+function InputField({ 
+  label, 
+  type, 
+  placeholder, 
+  value, 
+  onChange, 
+  disabled, 
+  required 
+}: InputFieldProps) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-white/60 ml-1">
+        {label}
+      </label>
+      <input
+        type={type}
+        className="input-rounded bg-white/5 border-white/10 focus:bg-white/10"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        required={required}
+      />
+    </div>
+  );
+}

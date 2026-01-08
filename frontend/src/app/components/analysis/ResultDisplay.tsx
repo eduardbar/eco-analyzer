@@ -1,101 +1,148 @@
-import React from 'react';
+/**
+ * Componente ResultDisplay.
+ * Muestra los resultados completos del análisis de un producto.
+ */
+
+'use client';
+
+import type { AnalysisResult } from '@/types';
+import { METRIC_THRESHOLDS, getMetricTrend } from '@/utils/score.utils';
 import EcoScoreGauge from './EcoScoreGauge';
 import MetricCard from './MetricCard';
 import MaterialsList from './MaterialsList';
 
-interface Material {
-  materialName: string;
-  sustainabilityScore: number;
-  notes: string;
+// ============================================================================
+// ICONOS
+// ============================================================================
+
+function RefreshIcon({ className }: { className?: string }) {
+  return (
+    <svg 
+      className={className}
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path 
+        strokeLinecap="round" 
+        strokeLinejoin="round" 
+        strokeWidth={2} 
+        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+      />
+    </svg>
+  );
 }
 
-interface AnalysisResult {
-  productTitle: string;
-  ecoScore: number;
-  summary: string;
-  carbonFootprint: number;
-  waterUsage: number;
-  materials: Material[];
-}
+// ============================================================================
+// TIPOS
+// ============================================================================
 
 interface ResultDisplayProps {
   result: AnalysisResult;
   onReset: () => void;
 }
 
-const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, onReset }) => {
-  const CarbonIcon = () => (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.002 4.002 0 003 15z" />
-    </svg>
-  );
+// ============================================================================
+// COMPONENTE
+// ============================================================================
 
-  const WaterIcon = () => (
-    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-    </svg>
-  );
+export default function ResultDisplay({ result, onReset }: ResultDisplayProps) {
+  const referenceId = generateReferenceId();
 
   return (
-    <div className="space-y-8">
+    <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 space-y-8 pb-12">
       {/* Header */}
-      <div className="text-center">
-        <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 via-blue-400 to-teal-400 bg-clip-text text-transparent">
-          {result.productTitle}
-        </h2>
-        <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6">
-          <p className="text-gray-300 text-lg leading-relaxed">{result.summary}</p>
+      <ResultHeader 
+        title={result.productTitle}
+        summary={result.summary}
+        referenceId={referenceId}
+        onReset={onReset}
+      />
+
+      {/* Score y Métricas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-1 glass-panel p-8 flex flex-col items-center justify-center !bg-black/20">
+          <EcoScoreGauge score={result.ecoScore} />
         </div>
-      </div>
 
-      {/* Eco Score Gauge */}
-      <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-8">
-        <EcoScoreGauge score={result.ecoScore} />
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6">
+        <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
           <MetricCard
-            icon={<CarbonIcon />}
             title="Huella de Carbono"
-            value={`${result.carbonFootprint} kg CO₂`}
-            description="Emisiones de carbono estimadas"
+            value={`${result.carbonFootprint.toFixed(1)} kg`}
+            subtitle="Emisiones CO2e estimadas"
+            trend={getMetricTrend(result.carbonFootprint, METRIC_THRESHOLDS.carbonFootprint)}
+            icon="☁️"
           />
-        </div>
-        <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6">
           <MetricCard
-            icon={<WaterIcon />}
             title="Uso de Agua"
-            value={`${result.waterUsage} L`}
-            description="Consumo de agua estimado"
+            value={`${result.waterUsage.toFixed(0)} L`}
+            subtitle="Consumo hídrico total"
+            trend={getMetricTrend(result.waterUsage, METRIC_THRESHOLDS.waterUsage)}
+            icon="💧"
           />
         </div>
       </div>
 
-      {/* Materials Analysis */}
-      {result.materials && result.materials.length > 0 && (
-        <div className="backdrop-blur-lg bg-white/5 border border-white/10 rounded-2xl p-6">
+      {/* Materiales */}
+      {result.materials.length > 0 && (
+        <div className="glass-panel p-8 !bg-black/20">
+          <SectionTitle>Desglose de Materiales</SectionTitle>
           <MaterialsList materials={result.materials} />
         </div>
       )}
-
-      {/* Reset Button */}
-      <div className="text-center">
-        <button
-          onClick={onReset}
-          className="px-8 py-4 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 shadow-lg backdrop-blur-sm"
-        >
-          <div className="flex items-center justify-center space-x-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span>Realizar Nuevo Análisis</span>
-          </div>
-        </button>
-      </div>
     </div>
   );
-};
+}
 
-export default ResultDisplay;
+// ============================================================================
+// SUBCOMPONENTES
+// ============================================================================
+
+interface ResultHeaderProps {
+  title: string;
+  summary: string;
+  referenceId: string;
+  onReset: () => void;
+}
+
+function ResultHeader({ title, summary, referenceId, onReset }: ResultHeaderProps) {
+  return (
+    <div className="glass-panel p-8 md:p-10 !bg-black/40">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+        <div>
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[var(--primary)] mb-3">
+            REF: {referenceId}
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{title}</h2>
+        </div>
+        <button
+          onClick={onReset}
+          className="btn-secondary text-sm !px-6 !py-3 flex items-center gap-2 group self-start"
+        >
+          <RefreshIcon className="w-4 h-4 group-hover:-rotate-180 transition-transform duration-500" />
+          Nuevo Análisis
+        </button>
+      </div>
+      <p className="text-lg text-white/70 leading-relaxed max-w-4xl border-t border-white/10 pt-6">
+        {summary}
+      </p>
+    </div>
+  );
+}
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 mb-8">
+      <div className="w-1 h-8 bg-[var(--primary)] rounded-full" />
+      <h3 className="text-2xl font-bold">{children}</h3>
+    </div>
+  );
+}
+
+// ============================================================================
+// UTILIDADES
+// ============================================================================
+
+function generateReferenceId(): string {
+  return Math.random().toString(36).substring(2, 11).toUpperCase();
+}

@@ -1,44 +1,99 @@
 import { z } from 'zod';
 
-// Schema de validación para la respuesta de IA
+// ============================================================================
+// SCHEMAS DE RESPUESTA DE IA
+// ============================================================================
+
+const MaterialAnalysisSchema = z.object({
+  materialName: z.string().min(1, 'El nombre del material es requerido'),
+  sustainabilityScore: z
+    .number()
+    .min(0, 'El score debe ser mínimo 0')
+    .max(10, 'El score debe ser máximo 10'),
+  notes: z.string().min(1, 'Las notas son requeridas'),
+});
+
+const EndOfLifeSchema = z.object({
+  recyclable: z.boolean(),
+  notes: z.string().min(1, 'Las notas de fin de vida son requeridas'),
+});
+
 export const AIResponseSchema = z.object({
-  productTitle: z.string().min(1, 'Product title is required'),
-  estimatedCarbonFootprintKg: z.number().min(0, 'Carbon footprint must be positive'),
-  estimatedWaterUsageLiters: z.number().min(0, 'Water usage must be positive'),
-  materialsAnalysis: z.array(z.object({
-    materialName: z.string().min(1, 'Material name is required'),
-    sustainabilityScore: z.number().min(1).max(10, 'Sustainability score must be between 1 and 10'),
-    notes: z.string().min(1, 'Notes are required')
-  })).min(1, 'At least one material analysis is required'),
-  endOfLife: z.object({
-    recyclable: z.boolean(),
-    notes: z.string().min(1, 'End of life notes are required')
-  }),
-  overallSummary: z.string().min(10, 'Overall summary must be at least 10 characters')
+  productTitle: z.string().min(1, 'El título del producto es requerido'),
+  estimatedCarbonFootprintKg: z
+    .number()
+    .min(0, 'La huella de carbono debe ser positiva'),
+  estimatedWaterUsageLiters: z
+    .number()
+    .min(0, 'El uso de agua debe ser positivo'),
+  materialsAnalysis: z
+    .array(MaterialAnalysisSchema)
+    .min(1, 'Se requiere al menos un análisis de material'),
+  endOfLife: EndOfLifeSchema,
+  overallSummary: z
+    .string()
+    .min(10, 'El resumen debe tener al menos 10 caracteres'),
 });
 
-export type AIResponse = z.infer<typeof AIResponseSchema>;
+export type AIResponseType = z.infer<typeof AIResponseSchema>;
 
-// Schema para validación de entrada del análisis
+// ============================================================================
+// SCHEMAS DE ENTRADA DE ANÁLISIS
+// ============================================================================
+
 export const AnalysisInputSchema = z.object({
-  description: z.string().min(10, 'Description must be at least 10 characters').max(1000, 'Description too long')
+  description: z
+    .string()
+    .min(10, 'La descripción debe tener al menos 10 caracteres')
+    .max(1000, 'La descripción es demasiado larga (máximo 1000 caracteres)'),
 });
 
-export type AnalysisInput = z.infer<typeof AnalysisInputSchema>;
+export type AnalysisInputType = z.infer<typeof AnalysisInputSchema>;
 
-// Schema para validación de registro de usuario
+// ============================================================================
+// SCHEMAS DE AUTENTICACIÓN
+// ============================================================================
+
 export const UserRegistrationSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name too long')
+  email: z.string().email('Formato de email inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  name: z
+    .string()
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(100, 'El nombre es demasiado largo'),
 });
 
-export type UserRegistration = z.infer<typeof UserRegistrationSchema>;
+export type UserRegistrationType = z.infer<typeof UserRegistrationSchema>;
 
-// Schema para validación de login
 export const UserLoginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(1, 'Password is required')
+  email: z.string().email('Formato de email inválido'),
+  password: z.string().min(1, 'La contraseña es requerida'),
 });
 
-export type UserLogin = z.infer<typeof UserLoginSchema>;
+export type UserLoginType = z.infer<typeof UserLoginSchema>;
+
+// ============================================================================
+// UTILIDADES DE VALIDACIÓN
+// ============================================================================
+
+export interface ValidationResult<T> {
+  success: boolean;
+  data?: T;
+  errors?: string[];
+}
+
+export function validateSchema<T>(
+  schema: z.ZodSchema<T>,
+  data: unknown
+): ValidationResult<T> {
+  const result = schema.safeParse(data);
+
+  if (result.success) {
+    return { success: true, data: result.data };
+  }
+
+  return {
+    success: false,
+    errors: result.error.issues.map((issue) => issue.message),
+  };
+}

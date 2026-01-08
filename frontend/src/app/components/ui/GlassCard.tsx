@@ -1,17 +1,30 @@
-import React from 'react';
+/**
+ * Componente GlassCard.
+ * Tarjeta con efecto de vidrio esmerilado.
+ */
+
+'use client';
+
+import { ReactNode } from 'react';
 
 interface GlassCardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
-const GlassCard: React.FC<GlassCardProps> = ({ children, className }) => {
+export default function GlassCard({ children, className = '' }: GlassCardProps) {
   return (
     <div
-      className={`bg-white/10 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 ${className}`}>
+      className={`
+        bg-white/5 
+        backdrop-blur-xl 
+        border border-white/10 
+        rounded-2xl 
+        shadow-xl
+        ${className}
+      `}
+    >
       {children}
     </div>
   );
-};
-
-export default GlassCard;
+}

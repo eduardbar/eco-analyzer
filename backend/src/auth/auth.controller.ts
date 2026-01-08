@@ -1,67 +1,120 @@
+/**
+ * Controlador de autenticación.
+ * Maneja registro y login de usuarios.
+ */
+
 import type { Request, Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma';
-import { UserRegistrationSchema, UserLoginSchema } from '../utils/validation.schemas';
+import { config } from '../config';
+import { 
+  UserRegistrationSchema, 
+  UserLoginSchema, 
+  validateSchema 
+} from '../utils/validation.schemas';
+import type { AuthTokenResponse, ApiErrorResponse } from '../types';
 
-export const register = async (req: Request, res: Response) => {
+// ============================================================================
+// CONSTANTES
+// ============================================================================
+
+const SALT_ROUNDS = 10;
+const TOKEN_EXPIRATION = '24h';
+
+// ============================================================================
+// HANDLERS
+// ============================================================================
+
+/**
+ * POST /auth/register
+ * Registra un nuevo usuario.
+ */
+export async function register(req: Request, res: Response): Promise<void> {
   try {
-    // Validar entrada
-    const validation = UserRegistrationSchema.safeParse(req.body);
+    const validation = validateSchema(UserRegistrationSchema, req.body);
+
     if (!validation.success) {
-      return res.status(400).json({ 
-        error: 'Invalid input', 
-        details: validation.error.issues.map(issue => issue.message)
-      });
+      res.status(400).json({
+        error: 'Datos de registro inválidos',
+        details: validation.errors,
+      } as ApiErrorResponse);
+      return;
     }
 
-    const { email, password, name } = validation.data;
+    const { email, password, name } = validation.data!;
 
-    // Verificar si el usuario ya existe
+    // Verificar si el email ya existe
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ error: 'Email already exists' });
+      res.status(409).json({ error: 'El email ya está registrado' } as ApiErrorResponse);
+      return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name,
-      },
+    // Crear usuario
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    await prisma.user.create({
+      data: { email, password: hashedPassword, name },
     });
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
 
-export const login = async (req: Request, res: Response) => {
+    res.status(201).json({ message: 'Usuario registrado exitosamente' });
+  } catch (error) {
+    console.error('Error en registro:', error);
+    res.status(500).json({ error: 'Error interno del servidor' } as ApiErrorResponse);
+  }
+}
+
+/**
+ * POST /auth/login
+ * Autentica un usuario y retorna un token JWT.
+ */
+export async function login(req: Request, res: Response): Promise<void> {
   try {
-    // Validar entrada
-    const validation = UserLoginSchema.safeParse(req.body);
+    const validation = validateSchema(UserLoginSchema, req.body);
+
     if (!validation.success) {
-      return res.status(400).json({ 
-        error: 'Invalid input', 
-        details: validation.error.issues.map(issue => issue.message)
-      });
+      res.status(400).json({
+        error: 'Datos de login inválidos',
+        details: validation.errors,
+      } as ApiErrorResponse);
+      return;
     }
 
-    const { email, password } = validation.data;
+    const { email, password } = validation.data!;
 
+    // Buscar usuario
     const user = await prisma.user.findUnique({ where: { email } });
-
-    if (!user || !await bcrypt.compare(password, user.password)) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!user) {
+      res.status(401).json({ error: 'Credenciales inválidas' } as ApiErrorResponse);
+      return;
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'your_jwt_secret', { expiresIn: '24h' });
+    // Verificar contraseña
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      res.status(401).json({ error: 'Credenciales inválidas' } as ApiErrorResponse);
+      return;
+    }
 
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+    // Generar token
+    const token = jwt.sign(
+      { userId: user.id },
+      config.jwtSecret,
+      { expiresIn: TOKEN_EXPIRATION }
+    );
+
+    const response: AuthTokenResponse = {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    };
+
+    res.json(response);
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Error en login:', error);
+    res.status(500).json({ error: 'Error interno del servidor' } as ApiErrorResponse);
   }
-};
+}

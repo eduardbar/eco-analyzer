@@ -7,3 +7,4 @@ backend/dist/
 .env.production
 .env.development
 .vercel
+.env*.local

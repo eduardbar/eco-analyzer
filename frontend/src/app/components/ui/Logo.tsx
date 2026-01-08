@@ -1,60 +1,22 @@
 import React from 'react';
 
-interface LogoProps {
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-}
-
-const Logo: React.FC<LogoProps> = ({ size = 'md', className = '' }) => {
-  const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16'
-  };
-
+export default function Logo() {
   return (
-    <div className={`${sizeClasses[size]} ${className} inline-flex items-center justify-center`}>
-      <svg 
-        viewBox="0 0 100 100" 
-        className="w-full h-full"
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Fondo circular verde */}
-        <circle cx="50" cy="50" r="50" fill="#22c55e" />
-        
-        {/* Hoja principal */}
-        <path 
-          d="M25 65c0-15 10-30 20-30s20 15 20 30c0 5-2.5 10-7.5 12.5-2.5 2.5-7.5 2.5-10 0-2.5-2.5-2.5-7.5 0-10 2.5-2.5 5-2.5 7.5 0" 
-          fill="white" 
-          stroke="#16a34a" 
-          strokeWidth="2"
-        />
-        
-        {/* Vena central de la hoja */}
-        <path 
-          d="M45 35v30" 
-          stroke="#16a34a" 
-          strokeWidth="3" 
-          strokeLinecap="round"
-        />
-        
-        {/* Pequeñas hojas laterales */}
-        <path 
-          d="M35 45c-2-2-4-2-6 0s-2 4 0 6" 
-          fill="white" 
-          stroke="#16a34a" 
-          strokeWidth="1.5"
-        />
-        <path 
-          d="M55 50c2-2 4-2 6 0s2 4 0 6" 
-          fill="white" 
-          stroke="#16a34a" 
-          strokeWidth="1.5"
-        />
-      </svg>
-    </div>
-  );
-};
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Background shape */}
+      <rect x="0" y="0" width="40" height="40" rx="12" fill="url(#paint0_linear)" />
+      
+      {/* Abstract Leaf/E symbol */}
+      <path d="M20 10C14.4772 10 10 14.4772 10 20C10 25.5228 14.4772 30 20 30H26C27.1046 30 28 29.1046 28 28V12C28 10.8954 27.1046 10 26 10H20Z" fill="white" fillOpacity="0.2"/>
+      <path d="M20 12C15.5817 12 12 15.5817 12 20C12 24.4183 15.5817 28 20 28H24V14C24 12.8954 23.1046 12 22 12H20Z" fill="white"/>
+      <circle cx="20" cy="20" r="3" fill="#FF5500"/>
 
-export default Logo;
+      <defs>
+        <linearGradient id="paint0_linear" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FF5500"/>
+          <stop offset="1" stopColor="#FF8800"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}

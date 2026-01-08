@@ -1,42 +1,85 @@
-import React from 'react';
-import GlassCard from '../ui/GlassCard';
+/**
+ * Componente MaterialsList.
+ * Tabla de materiales con sus scores de sostenibilidad.
+ */
 
-interface Material {
-  materialName: string;
-  sustainabilityScore: number;
-  notes: string;
-}
+'use client';
+
+import type { Material } from '@/types';
+import { getScoreBadgeColor } from '@/utils/score.utils';
 
 interface MaterialsListProps {
   materials: Material[];
-  className?: string;
 }
 
-const MaterialsList: React.FC<MaterialsListProps> = ({ materials, className = '' }) => {
-  const getScoreColor = (score: number) => {
-    if (score >= 7.5) return 'text-green-400';
-    if (score >= 5) return 'text-yellow-400';
-    return 'text-red-400';
-  };
+export default function MaterialsList({ materials }: MaterialsListProps) {
+  if (!materials.length) {
+    return (
+      <p className="text-center text-white/50 py-8">
+        No hay materiales para mostrar
+      </p>
+    );
+  }
 
   return (
-    <div className={className}>
-      <h3 className="text-lg font-bold text-white mb-4">Análisis de Materiales</h3>
-      <div className="space-y-3">
-        {materials.map((material, index) => (
-          <GlassCard key={index} className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <h4 className="font-semibold text-white">{material.materialName}</h4>
-              <span className={`font-bold ${getScoreColor(material.sustainabilityScore)}`}>
-                {material.sustainabilityScore.toFixed(1)}/10
-              </span>
-            </div>
-            <p className="text-sm text-white/80">{material.notes}</p>
-          </GlassCard>
-        ))}
-      </div>
+    <div className="overflow-hidden rounded-2xl border border-white/5">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="bg-white/5 border-b border-white/10">
+            <th className="py-5 px-6 text-xs font-bold text-white/50 uppercase tracking-wider">
+              Material
+            </th>
+            <th className="py-5 px-6 text-xs font-bold text-white/50 uppercase tracking-wider text-center">
+              Impacto
+            </th>
+            <th className="py-5 px-6 text-xs font-bold text-white/50 uppercase tracking-wider hidden md:table-cell">
+              Análisis Técnico
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-white/5">
+          {materials.map((material, index) => (
+            <MaterialRow key={material.id ?? index} material={material} />
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
-export default MaterialsList;
+// ============================================================================
+// SUBCOMPONENTES
+// ============================================================================
+
+interface MaterialRowProps {
+  material: Material;
+}
+
+function MaterialRow({ material }: MaterialRowProps) {
+  const badgeColorClass = getScoreBadgeColor(material.sustainabilityScore);
+
+  return (
+    <tr className="group hover:bg-white/5 transition-colors">
+      <td className="py-5 px-6">
+        <span className="font-bold text-lg text-white group-hover:text-[var(--primary)] transition-colors block mb-1">
+          {material.materialName}
+        </span>
+        {/* Notas visibles solo en móvil */}
+        <span className="text-sm text-white/40 md:hidden block mt-2">
+          {material.notes}
+        </span>
+      </td>
+      <td className="py-5 px-6 text-center align-middle">
+        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${badgeColorClass}`}>
+          <span className="font-bold text-lg">
+            {material.sustainabilityScore.toFixed(1)}
+          </span>
+          <span className="text-xs opacity-70">/10</span>
+        </div>
+      </td>
+      <td className="py-5 px-6 text-sm text-white/70 max-w-md hidden md:table-cell leading-relaxed">
+        {material.notes}
+      </td>
+    </tr>
+  );
+}

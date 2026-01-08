@@ -1,120 +1,156 @@
-import React, { useState } from 'react';
+/**
+ * Formulario de registro de usuario.
+ */
+
+'use client';
+
+import { useState, FormEvent } from 'react';
 
 interface RegisterFormProps {
   onRegister: (email: string, password: string, name: string) => Promise<void>;
-  onSwitchToLogin: () => void;
+  onSwitchToLogin?: () => void;
   isLoading: boolean;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onRegister, onSwitchToLogin, isLoading }) => {
+export default function RegisterForm({ onRegister, isLoading }: RegisterFormProps) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const passwordsMatch = password === confirmPassword;
+  const isValid = 
+    name.trim().length > 0 && 
+    email.trim().length > 0 && 
+    password.length >= 6 && 
+    passwordsMatch;
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim() || !name.trim() || !confirmPassword.trim()) return;
     
-    if (password !== confirmPassword) {
-      alert('Las contraseñas no coinciden');
+    if (!passwordsMatch) {
+      setError('Las contraseñas no coinciden');
       return;
     }
 
-    await onRegister(email, password, name);
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
+    setError(null);
+    try {
+      await onRegister(email.trim(), password, name.trim());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al registrar');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div>
-          <input
-            type="text"
-            className="w-full p-4 bg-white/5 text-white rounded-2xl border border-white/10 focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-300 placeholder-gray-400 backdrop-blur-sm"
-            placeholder="Nombre completo"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={isLoading}
-            required
-          />
-        </div>
+    <form 
+      onSubmit={handleSubmit} 
+      className="flex flex-col h-full justify-center space-y-5 animate-in fade-in duration-500"
+    >
+      <InputField
+        label="Nombre Completo"
+        type="text"
+        placeholder="Ej: Ana García"
+        value={name}
+        onChange={setName}
+        disabled={isLoading}
+        required
+      />
 
-        <div>
-          <input
-            type="email"
-            className="w-full p-4 bg-white/5 text-white rounded-2xl border border-white/10 focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-300 placeholder-gray-400 backdrop-blur-sm"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-            required
-          />
-        </div>
+      <InputField
+        label="Email Profesional"
+        type="email"
+        placeholder="nombre@empresa.com"
+        value={email}
+        onChange={setEmail}
+        disabled={isLoading}
+        required
+      />
 
-        <div>
-          <input
-            type="password"
-            className="w-full p-4 bg-white/5 text-white rounded-2xl border border-white/10 focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-300 placeholder-gray-400 backdrop-blur-sm"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-            required
-          />
-        </div>
+      <div className="grid grid-cols-2 gap-4">
+        <InputField
+          label="Contraseña"
+          type="password"
+          placeholder="••••••••"
+          value={password}
+          onChange={setPassword}
+          disabled={isLoading}
+          required
+        />
 
-        <div>
-          <input
-            type="password"
-            className="w-full p-4 bg-white/5 text-white rounded-2xl border border-white/10 focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-all duration-300 placeholder-gray-400 backdrop-blur-sm"
-            placeholder="Confirmar contraseña"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            disabled={isLoading}
-            required
-          />
-          {password && confirmPassword && password !== confirmPassword && (
-            <p className="text-red-400 text-xs mt-2">Las contraseñas no coinciden</p>
-          )}
-        </div>
+        <InputField
+          label="Confirmar"
+          type="password"
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          disabled={isLoading}
+          required
+          error={confirmPassword.length > 0 && !passwordsMatch}
+        />
       </div>
 
-      <button
-        type="submit" 
-        disabled={isLoading || !email.trim() || !password.trim() || !name.trim() || !confirmPassword.trim() || password !== confirmPassword} 
-        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white py-4 px-6 rounded-2xl font-medium transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
-      >
-        {isLoading ? (
-          <div className="flex items-center justify-center space-x-2">
-            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>Registrando...</span>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center space-x-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-            <span>Crear Cuenta</span>
-          </div>
-        )}
-      </button>
+      {error && (
+        <p className="text-red-400 text-sm text-center">{error}</p>
+      )}
 
-      <div className="text-center">
-        <span className="text-gray-400 text-sm">¿Ya tienes cuenta? </span>
+      <div className="pt-4">
         <button
-          type="button"
-          onClick={onSwitchToLogin}
-          className="text-purple-400 hover:text-purple-300 transition-colors duration-300 text-sm font-medium"
-          disabled={isLoading}
+          type="submit" 
+          disabled={isLoading || !isValid} 
+          className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-orange-500/20"
         >
-          Inicia sesión aquí
+          {isLoading ? 'Creando cuenta...' : 'Comenzar Ahora'}
         </button>
       </div>
     </form>
   );
-};
+}
 
-export default RegisterForm;
+// ============================================================================
+// SUBCOMPONENTES
+// ============================================================================
+
+interface InputFieldProps {
+  label: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  required?: boolean;
+  error?: boolean;
+}
+
+function InputField({ 
+  label, 
+  type, 
+  placeholder, 
+  value, 
+  onChange, 
+  disabled, 
+  required,
+  error 
+}: InputFieldProps) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-white/60 ml-1">
+        {label}
+      </label>
+      <input
+        type={type}
+        className={`input-rounded ${error ? 'border-red-500/50' : ''}`}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        required={required}
+      />
+    </div>
+  );
+}

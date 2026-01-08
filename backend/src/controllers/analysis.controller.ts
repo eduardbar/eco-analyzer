@@ -1,45 +1,87 @@
+/**
+ * Controlador de análisis de productos.
+ * Delega la lógica de negocio al servicio de análisis.
+ */
+
 import type { Request, Response } from 'express';
-import type { AuthenticatedRequest } from '../auth/auth.middleware';
-import { prisma } from '../lib/prisma';
-import { analysisService } from '../services/analysis.service';
+import { getAuthenticatedUser } from '../auth/auth.middleware';
+import { 
+  analysisService, 
+  ValidationError, 
+  AIAnalysisError 
+} from '../services/analysis.service';
+import type { ApiErrorResponse } from '../types';
 
-export const handleAnalyzeProduct = async (req: Request, res: Response) => {
+// ============================================================================
+// HANDLERS
+// ============================================================================
+
+/**
+ * POST /analysis/analyze
+ * Analiza un producto basado en su descripción.
+ */
+export async function handleAnalyzeProduct(req: Request, res: Response): Promise<void> {
+  try {
     const { description } = req.body;
-    const userId = (req as AuthenticatedRequest).user?.id;
+    const user = getAuthenticatedUser(req);
 
-    if (!description) {
-        return res.status(400).json({ error: 'La descripción es obligatoria.' });
+    if (!description || typeof description !== 'string') {
+      res.status(400).json({ 
+        error: 'La descripción del producto es obligatoria' 
+      } as ApiErrorResponse);
+      return;
     }
 
-    if (!userId) {
-        return res.status(401).json({ error: 'Usuario no autenticado.' });
-    }
+    const analysis = await analysisService.analyzeProduct(description.trim(), user.id);
+    res.status(201).json(analysis);
 
-    try {
-        const newAnalysis = await analysisService.analyzeProduct(description, userId);
-        res.status(201).json(newAnalysis);
-    } catch (error) {
-        console.error("Error al analizar el producto:", error);
-        res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-};
+  } catch (error) {
+    handleAnalysisError(error, res);
+  }
+}
 
-export const getAnalysisHistory = async (req: Request, res: Response) => {
-    const userId = (req as AuthenticatedRequest).user?.id;
+/**
+ * GET /analysis
+ * Obtiene el historial de análisis del usuario.
+ */
+export async function getAnalysisHistory(req: Request, res: Response): Promise<void> {
+  try {
+    const user = getAuthenticatedUser(req);
+    const history = await analysisService.getAnalysisHistory(user.id);
+    res.json(history);
 
-    if (!userId) {
-        return res.status(401).json({ error: 'Usuario no autenticado.' });
-    }
+  } catch (error) {
+    console.error('Error al obtener historial:', error);
+    res.status(500).json({ 
+      error: 'Error al obtener el historial de análisis' 
+    } as ApiErrorResponse);
+  }
+}
 
-    try {
-        const analyses = await prisma.analysis.findMany({
-            where: { userId: userId },
-            include: { materials: true },
-            orderBy: { createdAt: 'desc' },
-        });
-        res.status(200).json(analyses);
-    } catch (error) {
-        console.error("Error al obtener el historial de análisis:", error);
-        res.status(500).json({ error: 'Error interno del servidor.' });
-    }
-};
+// ============================================================================
+// MANEJO DE ERRORES
+// ============================================================================
+
+function handleAnalysisError(error: unknown, res: Response): void {
+  if (error instanceof ValidationError) {
+    res.status(400).json({
+      error: 'Error de validación',
+      details: error.errors,
+    } as ApiErrorResponse);
+    return;
+  }
+
+  if (error instanceof AIAnalysisError) {
+    console.error('Error de análisis de IA:', error.message);
+    res.status(502).json({
+      error: 'Error al procesar el análisis con IA',
+      details: [error.message],
+    } as ApiErrorResponse);
+    return;
+  }
+
+  console.error('Error inesperado en análisis:', error);
+  res.status(500).json({ 
+    error: 'Error interno del servidor' 
+  } as ApiErrorResponse);
+}
