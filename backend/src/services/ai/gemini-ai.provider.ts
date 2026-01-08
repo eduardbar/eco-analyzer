@@ -37,7 +37,7 @@ export class GeminiAIProvider implements IAIProvider {
   readonly providerName = 'GoogleGemini';
   
   private readonly genAI: GoogleGenerativeAI;
-  private readonly modelName = 'gemini-pro';
+  private readonly modelName = 'models/gemini-1.5-flash';
 
   constructor(apiKey: string) {
     this.genAI = new GoogleGenerativeAI(apiKey);
