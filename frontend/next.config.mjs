@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
+
+// Importar Tailwind CSS como CSS directo (no como PostCSS)
+import './src/app/globals.css';
+
 const nextConfig = {
+  // Rewrites para apuntar API calls al backend
   async rewrites() {
     return [
       {
