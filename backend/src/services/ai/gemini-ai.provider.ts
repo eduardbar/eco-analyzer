@@ -55,8 +55,8 @@ export class GeminiAIProvider implements IAIProvider {
       return this.parseResponse(text);
     } catch (error: unknown) {
       // Manejar errores de cuota específicamente
-      if (error instanceof Error && error.message.includes('429')) {
-        throw new Error('Se ha excedido la cuota de la API de IA. Por favor, intenta de nuevo más tarde o contacta al administrador.');
+      if (error instanceof Error && (error.message.includes('429') || error.message.includes('quota'))) {
+        throw new Error('CUOTA_EXCEDIDA');
       }
       throw error;
     }

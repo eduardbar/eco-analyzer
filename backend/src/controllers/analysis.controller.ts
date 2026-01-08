@@ -72,6 +72,15 @@ function handleAnalysisError(error: unknown, res: Response): void {
   }
 
   if (error instanceof AIAnalysisError) {
+    // Verificar si es error de cuota
+    if (error.message.includes('CUOTA_EXCEDIDA')) {
+      res.status(429).json({
+        error: 'Cuota excedida',
+        details: ['La cuota de la API de IA ha sido excedida. Intenta más tarde.'],
+      } as ApiErrorResponse);
+      return;
+    }
+
     console.error('Error de análisis de IA:', error.message);
     res.status(502).json({
       error: 'Error al procesar el análisis con IA',
