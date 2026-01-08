@@ -4,29 +4,28 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_ENV=production next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^20.19.9",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "@vercel/analytics": "^1.5.0",
     "next": "^16.1.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.57.0",
-    "@tailwindcss/postcss": "^4.1.18",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.19.9",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@eslint": "^9",
-    "eslint-config-next": "15.4.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "eslint": "^9",
+    "eslint-config-next": "15.4.6"
   }
-}
 }

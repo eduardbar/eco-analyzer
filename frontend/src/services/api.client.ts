@@ -9,7 +9,9 @@ import type { ApiError } from '@/types';
 // CONFIGURACIÓN
 // ============================================================================
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+// En producción usamos rutas relativas para aprovechar los rewrites de Vercel
+// que proxean /api/* hacia el backend en Render (evita problemas de CORS)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 // ============================================================================
 // ERRORES PERSONALIZADOS
