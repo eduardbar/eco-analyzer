@@ -53,6 +53,8 @@ app.get('/api/v1/health', (_req, res) => {
     message: 'EcoAnalyzer API funcionando',
     timestamp: new Date().toISOString(),
     environment: config.nodeEnv,
+    geminiConfigured: !!config.geminiApiKey,
+    geminiKeyPrefix: config.geminiApiKey ? config.geminiApiKey.substring(0, 10) + '...' : null,
   });
 });
 
