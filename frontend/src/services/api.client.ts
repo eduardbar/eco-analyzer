@@ -9,9 +9,10 @@ import type { ApiError } from '@/types';
 // CONFIGURACIÓN
 // ============================================================================
 
-// En producción usamos rutas relativas para aprovechar los rewrites de Vercel
+// Siempre usamos rutas relativas para aprovechar los rewrites de Vercel/Next.js
 // que proxean /api/* hacia el backend en Render (evita problemas de CORS)
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
+// En desarrollo local, next.config.mjs también tiene rewrites configurados
+const API_BASE_URL = '/api/v1';
 
 // ============================================================================
 // ERRORES PERSONALIZADOS
