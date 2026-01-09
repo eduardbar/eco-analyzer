@@ -1,178 +1,150 @@
-# EcoAnalyzer
+# 🌱 EcoAnalyzer: Análisis Ambiental Inteligente
 
-Plataforma de análisis de impacto ambiental potenciada por IA. Métricas precisas para decisiones sostenibles.
+![EcoAnalyzer Preview](frontend/public/og-image.png)
 
-![Status](https://img.shields.io/badge/Status-Production-brightgreen)
-![AI](https://img.shields.io/badge/AI-Gemini-orange)
-![Frontend](https://img.shields.io/badge/Frontend-Next.js%2015-black)
-![Backend](https://img.shields.io/badge/Backend-Express-green)
+**EcoAnalyzer** es una plataforma de análisis de impacto ambiental de nivel empresarial, potenciada por Inteligencia Artificial. A diferencia de las herramientas convencionales de evaluación ambiental, EcoAnalyzer transforma descripciones de productos en métricas precisas y accionables, permitiendo a consumidores y organizaciones tomar decisiones de compra más conscientes y sostenibles.
 
-## El Problema
+## 🚀 Características Principales
 
-Los consumidores carecen de herramientas accesibles para evaluar el impacto ambiental real de los productos que compran. La información es opaca, dispersa o demasiado técnica.
+- 🤖 **IA Avanzada**: Motor de análisis impulsado por Google Gemini para evaluaciones precisas.
+- 📊 **Eco-Score**: Puntuación única de 0-100 que sintetiza el impacto ambiental total.
+- 🌍 **Huella de Carbono**: Estimación de emisiones de CO₂ en kg con analogías comprensibles.
+- 💧 **Uso de Agua**: Cálculo del consumo hídrico en litros del ciclo de vida del producto.
+- ♻️ **Análisis de Materiales**: Desglose de componentes con puntuación de sostenibilidad individual.
+- 🔐 **Autenticación Segura**: Sistema de login con JWT y protección de rutas.
+- 📜 **Historial Personal**: Almacenamiento y consulta de análisis previos por usuario.
+- 🎨 **UI Glassmorphism**: Interfaz moderna, elegante y responsive con tema oscuro.
 
-## La Solución
+## 🛠️ Stack Tecnológico
 
-Una aplicación web que permite obtener un **Eco-Score** para cualquier producto. Describiendo un producto, la IA analiza datos para generar una puntuación de impacto ambiental fácil de entender, junto con un desglose detallado.
+| Capa | Tecnologías |
+|------|-------------|
+| **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS |
+| **Backend** | Node.js, Express.js, TypeScript |
+| **Base de Datos** | SQLite (dev) / MySQL (prod) con Prisma ORM |
+| **IA** | Google Gemini API |
+| **Auth** | JWT (JSON Web Tokens), bcrypt |
+| **Testing** | Jest, React Testing Library |
+| **Infraestructura** | Docker, Docker Compose |
 
-## Stack Tecnológico
+## ⚙️ Configuración del Entorno
 
-| Capa | Tecnología |
-|------|------------|
-| Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS |
-| Backend | Node.js, Express, TypeScript |
-| Base de Datos | SQLite (dev) / MySQL (prod) con Prisma ORM |
-| IA | Google Gemini API |
-| Autenticación | JWT |
-| Contenedores | Docker, Docker Compose |
-| Testing | Jest, React Testing Library |
+Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
 
-## Funcionalidades
+```env
+# Base de datos
+DATABASE_URL="file:./dev.db"
 
-### Análisis de Productos con IA
-- Procesamiento de descripciones con Gemini AI
-- Cálculo de Eco-Score (0-100)
-- Estimación de huella de carbono (kg CO₂)
-- Estimación de uso de agua (litros)
-- Análisis de materiales con puntuación de sostenibilidad
-- Recomendaciones personalizadas
+# Autenticación
+JWT_SECRET=tu_secreto_super_seguro
 
-### Autenticación
-- Registro de usuarios
-- Login/logout con JWT
-- Protección de rutas
-- Persistencia de sesión
+# Google Gemini AI
+GEMINI_API_KEY=tu_api_key_de_gemini
 
-### Historial
-- Almacenamiento de análisis por usuario
-- Búsqueda y filtrado
-- Exportación de datos
-
-### UI/UX
-- Diseño glassmorphism oscuro
-- Medidor circular de Eco-Score
-- Tarjetas de métricas con iconos
-- Responsive design
-- Open Graph optimizado para redes sociales
-
-## Estructura del Proyecto
-
-```
-├── backend/
-│   ├── src/
-│   │   ├── controllers/    # Handlers de requests
-│   │   ├── routes/         # Definición de rutas
-│   │   ├── services/       # Lógica de negocio
-│   │   ├── middleware/     # Auth, validación
-│   │   ├── utils/          # Eco-Score calculator, validación
-│   │   └── lib/            # Prisma client
-│   └── prisma/             # Schema y migraciones
-├── frontend/
-│   ├── src/
-│   │   ├── app/            # App Router (Next.js)
-│   │   ├── components/     # Componentes React
-│   │   ├── hooks/          # Custom hooks
-│   │   └── services/       # API client
-│   └── public/             # Assets estáticos
-└── docs/                   # RFCs y documentación
+NODE_ENV=development
 ```
 
-## API Endpoints
+## 📦 Instalación y Despliegue
 
-### Autenticación
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/v1/auth/register` | Registrar usuario |
-| POST | `/api/v1/auth/login` | Iniciar sesión |
+### 1. Clonar el repositorio
 
-### Análisis (requiere auth)
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/v1/analysis` | Crear nuevo análisis |
-| GET | `/api/v1/analysis` | Obtener historial |
-
-## Instalación
-
-### Prerrequisitos
-- Node.js 18+
-- npm
-
-### Configuración
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/eduardbar/eco-analyzer.git
-   cd eco-analyzer
-   ```
-
-2. **Configurar variables de entorno**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Editar `.env`:
-   ```
-   GEMINI_API_KEY=tu_clave_de_gemini
-   JWT_SECRET=tu_secreto_jwt
-   DATABASE_URL=file:./dev.db
-   ```
-
-3. **Backend**
-   ```bash
-   cd backend
-   npm install
-   npx prisma migrate dev
-   npx prisma generate
-   ```
-
-4. **Frontend**
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-### Desarrollo
-
-Terminal 1 (Backend):
 ```bash
-cd backend && npm run dev
+git clone https://github.com/eduardbar/eco-analyzer.git
+cd eco-analyzer
 ```
 
-Terminal 2 (Frontend):
+### 2. Instalar dependencias
+
+Instala las dependencias del backend y frontend:
+
 ```bash
-cd frontend && npm run dev
+cd backend && npm install
+cd ../frontend && npm install
 ```
 
-- Frontend: http://localhost:3000
-- Backend: http://localhost:3001
+### 3. Configurar la base de datos
 
-### Docker
+```bash
+cd backend
+npx prisma migrate dev
+npx prisma generate
+```
+
+### 4. Desarrollo Local
+
+Para correr ambos servidores simultáneamente:
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+npm run dev
+```
+
+**Terminal 2 - Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+- Frontend disponible en: `http://localhost:3000`
+- Backend API en: `http://localhost:3001`
+
+### 5. Docker (Producción)
+
+Para levantar todo el entorno con Docker:
 
 ```bash
 docker-compose up --build
 ```
 
-## Eco-Score
+## 📂 Estructura del Proyecto
 
-El Eco-Score es una puntuación de 0 a 100 (mayor = mejor) calculada mediante:
+```
+eco-analyzer/
+├── backend/                  # API REST Express + TypeScript
+│   ├── src/
+│   │   ├── controllers/      # Lógica de requests/responses
+│   │   ├── services/         # Lógica de negocio (Gemini AI)
+│   │   ├── routes/           # Definición de endpoints
+│   │   ├── middleware/       # Auth, validación
+│   │   ├── utils/            # Eco-Score calculator, schemas
+│   │   └── lib/              # Prisma client
+│   └── prisma/               # Schema y migraciones DB
+├── frontend/                 # SPA Next.js 15 + React 19
+│   ├── src/
+│   │   ├── app/              # App Router (páginas y layouts)
+│   │   ├── components/       # Componentes UI reutilizables
+│   │   ├── hooks/            # Custom hooks (useAnalysis, useAuth)
+│   │   └── services/         # API client
+│   └── public/               # Assets estáticos
+└── docs/                     # RFCs y documentación técnica
+```
 
-| Métrica | Peso |
-|---------|------|
-| Huella de Carbono | 40% |
-| Uso de Agua | 30% |
-| Sostenibilidad de Materiales | 30% |
+## 📡 API Endpoints
 
-Cada métrica se normaliza a una escala 0-100 antes de aplicar los pesos.
+### Autenticación (`/api/v1/auth`)
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/register` | Registrar nuevo usuario |
+| `POST` | `/login` | Iniciar sesión (retorna JWT) |
 
-## Documentación
+### Análisis (`/api/v1/analysis`) - *Requiere Auth*
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/` | Crear nuevo análisis de producto |
+| `GET` | `/` | Obtener historial del usuario |
 
-- [RFC-001: UI/UX y Componentes](./docs/RFC-001.md)
-- [RFC-002: Estrategia de Testing](./docs/RFC-002.md)
-- [RFC-003: API y Autenticación](./docs/RFC-003.md)
-- [RFC-004: Base de Datos](./docs/RFC-004.md)
-- [RFC-005: Motor de Análisis](./docs/RFC-005.md)
-- [RFC-006: Docker y Despliegue](./docs/RFC-006.md)
+## 📚 Documentación
 
-## Licencia
+| RFC | Descripción |
+|-----|-------------|
+| [RFC-001](./docs/RFC-001.md) | Estructura de Componentes y UI/UX |
+| [RFC-002](./docs/RFC-002.md) | Estrategia de Pruebas |
+| [RFC-003](./docs/RFC-003.md) | Diseño de API y Autenticación |
+| [RFC-004](./docs/RFC-004.md) | Esquema de Base de Datos |
+| [RFC-005](./docs/RFC-005.md) | Motor de Análisis Principal |
+| [RFC-006](./docs/RFC-006.md) | Dockerización y Despliegue |
 
-MIT
+---
+
+© 2026 EcoAnalyzer Team
