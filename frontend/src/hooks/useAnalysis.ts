@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { apiClient, AuthenticationError } from '@/services/api.client';
+import { apiClient, AuthenticationError, ApiRequestError } from '@/services/api.client';
 import type { AnalysisResult } from '@/types';
 
 // ============================================================================
@@ -44,7 +44,12 @@ export function useAnalysis(): UseAnalysisReturn {
       );
       setResult(data);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error al analizar el producto';
+      let message = err instanceof Error ? err.message : 'Error al analizar el producto';
+
+      if (err instanceof ApiRequestError && err.details?.length) {
+        message = err.details.join(' ');
+      }
+
       setError(message);
       
       // Re-throw AuthenticationError para que el componente pueda manejarlo
