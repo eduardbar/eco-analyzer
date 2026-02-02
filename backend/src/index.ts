@@ -76,7 +76,7 @@ app.listen(config.port, () => {
 ╠════════════════════════════════════════════════════╣
 ║  Puerto: ${config.port.toString().padEnd(41)}║
 ║  Ambiente: ${config.nodeEnv.padEnd(39)}║
-║  IA: ${config.geminiApiKey ? 'Gemini configurado ✓' : 'Mock (sin API key)'.padEnd(40)}    ║
+ ║  IA: ${config.groqApiKey ? 'Groq configurado ✓' : 'Mock (sin API key)'.padEnd(40)}    ║
 ╚════════════════════════════════════════════════════╝
   `);
 });
