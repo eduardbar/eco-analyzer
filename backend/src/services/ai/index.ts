@@ -5,28 +5,28 @@
 
 import { config } from '../../config';
 import type { IAIProvider } from './ai-provider.interface';
-import { GeminiAIProvider } from './gemini-ai.provider';
+import { GroqAIProvider } from './groq-ai.provider';
 import { MockAIProvider } from './mock-ai.provider';
 
 let cachedProvider: IAIProvider | null = null;
 
 /**
  * Crea o retorna el proveedor de IA configurado.
- * Usa Gemini si hay API key válida, Mock en caso contrario.
+ * Usa Groq si hay API key válida, Mock en caso contrario.
  */
 export function getAIProvider(): IAIProvider {
   if (cachedProvider) {
     return cachedProvider;
   }
 
-  const apiKey = config.geminiApiKey;
+  const apiKey = config.groqApiKey;
   const isValidApiKey = apiKey && !apiKey.includes('your_') && apiKey.length > 10;
 
   if (isValidApiKey) {
-    console.log('✓ Usando proveedor de IA: Google Gemini');
-    cachedProvider = new GeminiAIProvider(apiKey);
+    console.log('✓ Usando proveedor de IA: Groq');
+    cachedProvider = new GroqAIProvider(apiKey);
   } else {
-    console.warn('⚠ GEMINI_API_KEY no configurada. Usando proveedor Mock.');
+    console.warn('⚠ GROQ_API_KEY no configurada. Usando proveedor Mock.');
     cachedProvider = new MockAIProvider();
   }
 
@@ -42,5 +42,5 @@ export function resetAIProvider(): void {
 
 // Re-exportar interfaces y providers
 export type { IAIProvider } from './ai-provider.interface';
-export { GeminiAIProvider } from './gemini-ai.provider';
+export { GroqAIProvider } from './groq-ai.provider';
 export { MockAIProvider } from './mock-ai.provider';

@@ -1,45 +1,46 @@
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
 async function listModels() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     console.error("No API KEY found");
     return;
   }
-  
-  const genAI = new GoogleGenerativeAI(apiKey);
-  // Note: The Node.js SDK doesn't always expose listModels directly on the main client in older versions, 
-  // but let's try to infer/use the model directly or check docs.
-  // Actually, checking the models via a simple generation test on a known stable model is better if listModels isn't easy.
-  // But let's try to access the model manager if possible.
-  
+
+  const groq = new Groq({ apiKey });
+
   console.log("Trying to find a working model...");
-  
+
   const candidates = [
-    "gemini-1.5-flash-001",
-    "gemini-1.5-flash-002",
-    "gemini-1.5-pro-001",
-    "gemini-1.5-pro-002",
-    "gemini-2.0-flash-exp"
+    "mixtral-8x7b-32768",
+    "llama-3.1-70b-versatile",
+    "llama-3.1-8b-instant",
+    "llama-3.3-70b-versatile"
   ];
 
   for (const modelName of candidates) {
     process.stdout.write(`Testing ${modelName}... `);
     try {
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent("Hello");
+      const result = await groq.chat.completions.create({
+        messages: [{ role: 'user', content: 'Hello' }],
+        model: modelName,
+        max_tokens: 10
+      });
       console.log("SUCCESS ✅");
-      break; 
+      break;
     } catch (e: any) {
-        if (e.message && e.message.includes("404")) {
-             console.log("Not Found ❌");
-        } else {
-            console.log(`Error: ${e.message}`);
-        }
+      if (e.message && e.message.includes("404")) {
+        console.log("Not Found ❌");
+      } else if (e.message && e.message.includes("401")) {
+        console.log("Unauthorized - Check API Key ❌");
+        break;
+      } else {
+        console.log(`Error: ${e.message}`);
+      }
     }
   }
 }

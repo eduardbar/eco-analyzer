@@ -32,12 +32,12 @@ function getOptionalEnv(key: string, defaultValue: string): string {
 const JWT_SECRET: string = getRequiredEnv('JWT_SECRET', 'dev_jwt_secret_change_in_production');
 const NODE_ENV: string = getOptionalEnv('NODE_ENV', 'development');
 const PORT: number = parseInt(getOptionalEnv('PORT', '3001'), 10);
-const GEMINI_API_KEY: string | null = process.env.GEMINI_API_KEY ?? null;
+const GROQ_API_KEY: string | null = process.env.GROQ_API_KEY ?? null;
 
 export const config = {
   port: PORT,
   jwtSecret: JWT_SECRET,
-  geminiApiKey: GEMINI_API_KEY,
+  groqApiKey: GROQ_API_KEY,
   nodeEnv: NODE_ENV,
   isProduction: NODE_ENV === 'production',
   isDevelopment: NODE_ENV === 'development',
