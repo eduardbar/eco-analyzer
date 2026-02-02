@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Rewrites para apuntar API calls al backend
+  // Rewrites para apuntar API calls al backend (simplified)
   async rewrites() {
     return [
       {
