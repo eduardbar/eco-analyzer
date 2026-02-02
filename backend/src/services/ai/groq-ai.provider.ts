@@ -37,7 +37,7 @@ export class GroqAIProvider implements IAIProvider {
   readonly providerName = 'Groq';
   
   private readonly groq: Groq;
-  private readonly modelName = 'mixtral-8x7b-32768';
+  private readonly modelName = 'llama-3.1-8b-instant';
 
   constructor(apiKey: string) {
     this.groq = new Groq({ apiKey });
