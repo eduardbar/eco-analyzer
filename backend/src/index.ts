@@ -81,7 +81,7 @@ app.get('/api/v1/health', async (_req, res) => {
     // Verificar AI Provider (solo si está configurado)
     if (config.groqApiKey) {
       try {
-        const { getAIProvider } = await import('./services/ai');
+        const { getAIProvider } = await import('./services/ai/index.js');
         const provider = getAIProvider();
         const testResult = await provider.analyze('test');
         if (testResult && testResult.productTitle) {
