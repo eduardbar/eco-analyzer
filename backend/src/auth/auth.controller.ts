@@ -20,7 +20,7 @@ import type { AuthTokenResponse, ApiErrorResponse } from '../types';
 // ============================================================================
 
 const SALT_ROUNDS = 10;
-const TOKEN_EXPIRATION = '24h';
+const TOKEN_EXPIRATION = '365d';
 
 // ============================================================================
 // HANDLERS
