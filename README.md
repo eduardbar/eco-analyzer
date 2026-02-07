@@ -1,68 +1,68 @@
-# 🌱 EcoAnalyzer: Análisis Ambiental Inteligente
+# 🌱 EcoAnalyzer: AI-Powered Environmental Impact Analysis
 
 ![EcoAnalyzer Preview](frontend/public/og-image.png)
 
-**EcoAnalyzer** es una plataforma de análisis de impacto ambiental de nivel empresarial, potenciada por Inteligencia Artificial. A diferencia de las herramientas convencionales de evaluación ambiental, EcoAnalyzer transforma descripciones de productos en métricas precisas y accionables, permitiendo a consumidores y organizaciones tomar decisiones de compra más conscientes y sostenibles.
+**EcoAnalyzer** is an enterprise-level environmental impact analysis platform powered by Artificial Intelligence. Unlike conventional environmental assessment tools, EcoAnalyzer transforms product descriptions into precise and actionable metrics, enabling consumers and organizations to make more conscious and sustainable purchasing decisions.
 
-## 🚀 Características Principales
+## 🚀 Key Features
 
-- 🤖 **IA Avanzada**: Motor de análisis impulsado por Google Gemini para evaluaciones precisas.
-- 📊 **Eco-Score**: Puntuación única de 0-100 que sintetiza el impacto ambiental total.
-- 🌍 **Huella de Carbono**: Estimación de emisiones de CO₂ en kg con analogías comprensibles.
-- 💧 **Uso de Agua**: Cálculo del consumo hídrico en litros del ciclo de vida del producto.
-- ♻️ **Análisis de Materiales**: Desglose de componentes con puntuación de sostenibilidad individual.
-- 🔐 **Autenticación Segura**: Sistema de login con JWT y protección de rutas.
-- 📜 **Historial Personal**: Almacenamiento y consulta de análisis previos por usuario.
-- 🎨 **UI Glassmorphism**: Interfaz moderna, elegante y responsive con tema oscuro.
+- 🤖 **Advanced AI**: Analysis engine powered by Google Gemini for precise assessments.
+- 📊 **Eco-Score**: Single 0-100 score that synthesizes total environmental impact.
+- 🌍 **Carbon Footprint**: CO₂ emissions estimation in kg with understandable analogies.
+- 💧 **Water Usage**: Product lifecycle water consumption calculation in liters.
+- ♻️ **Material Analysis**: Component breakdown with individual sustainability scores.
+- 🔐 **Secure Authentication**: Login system with JWT and route protection.
+- 📜 **Personal History**: Storage and consultation of previous analyses per user.
+- 🎨 **Glassmorphism UI**: Modern, elegant, and responsive interface with dark theme.
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Tech Stack
 
-| Capa | Tecnologías |
+| Layer | Technologies |
 |------|-------------|
 | **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS |
 | **Backend** | Node.js, Express.js, TypeScript |
-| **Base de Datos** | SQLite (dev) / MySQL (prod) con Prisma ORM |
-| **IA** | Google Gemini API |
+| **Database** | SQLite (dev) / MySQL (prod) with Prisma ORM |
+| **AI** | Google Gemini API |
 | **Auth** | JWT (JSON Web Tokens), bcrypt |
 | **Testing** | Jest, React Testing Library |
-| **Infraestructura** | Docker, Docker Compose |
+| **Infrastructure** | Docker, Docker Compose |
 
-## ⚙️ Configuración del Entorno
+## ⚙️ Environment Setup
 
-Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
+Create a `.env` file in the `backend/` folder with the following variables:
 
 ```env
-# Base de datos
+# Database
 DATABASE_URL="file:./dev.db"
 
-# Autenticación
-JWT_SECRET=tu_secreto_super_seguro
+# Authentication
+JWT_SECRET=your_super_secure_secret
 
 # Google Gemini AI
-GEMINI_API_KEY=tu_api_key_de_gemini
+GEMINI_API_KEY=your_gemini_api_key
 
 NODE_ENV=development
 ```
 
-## 📦 Instalación y Despliegue
+## 📦 Installation and Deployment
 
-### 1. Clonar el repositorio
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/eduardbar/eco-analyzer.git
 cd eco-analyzer
 ```
 
-### 2. Instalar dependencias
+### 2. Install dependencies
 
-Instala las dependencias del backend y frontend:
+Install backend and frontend dependencies:
 
 ```bash
 cd backend && npm install
 cd ../frontend && npm install
 ```
 
-### 3. Configurar la base de datos
+### 3. Configure the database
 
 ```bash
 cd backend
@@ -70,9 +70,9 @@ npx prisma migrate dev
 npx prisma generate
 ```
 
-### 4. Desarrollo Local
+### 4. Local Development
 
-Para correr ambos servidores simultáneamente:
+To run both servers simultaneously:
 
 **Terminal 1 - Backend:**
 ```bash
@@ -86,64 +86,64 @@ cd frontend
 npm run dev
 ```
 
-- Frontend disponible en: `http://localhost:3000`
-- Backend API en: `http://localhost:3001`
+- Frontend available at: `http://localhost:3000`
+- Backend API at: `http://localhost:3001`
 
-### 5. Docker (Producción)
+### 5. Docker (Production)
 
-Para levantar todo el entorno con Docker:
+To start the entire environment with Docker:
 
 ```bash
 docker-compose up --build
 ```
 
-## 📂 Estructura del Proyecto
+## 📂 Project Structure
 
 ```
 eco-analyzer/
-├── backend/                  # API REST Express + TypeScript
+├── backend/                  # REST API Express + TypeScript
 │   ├── src/
-│   │   ├── controllers/      # Lógica de requests/responses
-│   │   ├── services/         # Lógica de negocio (Gemini AI)
-│   │   ├── routes/           # Definición de endpoints
-│   │   ├── middleware/       # Auth, validación
+│   │   ├── controllers/      # Request/response logic
+│   │   ├── services/         # Business logic (Gemini AI)
+│   │   ├── routes/           # Endpoint definitions
+│   │   ├── middleware/       # Auth, validation
 │   │   ├── utils/            # Eco-Score calculator, schemas
 │   │   └── lib/              # Prisma client
-│   └── prisma/               # Schema y migraciones DB
+│   └── prisma/               # DB schema and migrations
 ├── frontend/                 # SPA Next.js 15 + React 19
 │   ├── src/
-│   │   ├── app/              # App Router (páginas y layouts)
-│   │   ├── components/       # Componentes UI reutilizables
+│   │   ├── app/              # App Router (pages and layouts)
+│   │   ├── components/       # Reusable UI components
 │   │   ├── hooks/            # Custom hooks (useAnalysis, useAuth)
 │   │   └── services/         # API client
-│   └── public/               # Assets estáticos
-└── docs/                     # RFCs y documentación técnica
+│   └── public/               # Static assets
+└── docs/                     # RFCs and technical documentation
 ```
 
 ## 📡 API Endpoints
 
-### Autenticación (`/api/v1/auth`)
-| Método | Endpoint | Descripción |
+### Authentication (`/api/v1/auth`)
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/register` | Registrar nuevo usuario |
-| `POST` | `/login` | Iniciar sesión (retorna JWT) |
+| `POST` | `/register` | Register new user |
+| `POST` | `/login` | Login (returns JWT) |
 
-### Análisis (`/api/v1/analysis`) - *Requiere Auth*
-| Método | Endpoint | Descripción |
+### Analysis (`/api/v1/analysis`) - *Requires Auth*
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/` | Crear nuevo análisis de producto |
-| `GET` | `/` | Obtener historial del usuario |
+| `POST` | `/` | Create new product analysis |
+| `GET` | `/` | Get user history |
 
-## 📚 Documentación
+## 📚 Documentation
 
-| RFC | Descripción |
+| RFC | Description |
 |-----|-------------|
-| [RFC-001](./docs/RFC-001.md) | Estructura de Componentes y UI/UX |
-| [RFC-002](./docs/RFC-002.md) | Estrategia de Pruebas |
-| [RFC-003](./docs/RFC-003.md) | Diseño de API y Autenticación |
-| [RFC-004](./docs/RFC-004.md) | Esquema de Base de Datos |
-| [RFC-005](./docs/RFC-005.md) | Motor de Análisis Principal |
-| [RFC-006](./docs/RFC-006.md) | Dockerización y Despliegue |
+| [RFC-001](./docs/RFC-001.md) | Component Structure and UI/UX |
+| [RFC-002](./docs/RFC-002.md) | Testing Strategy |
+| [RFC-003](./docs/RFC-003.md) | API Design and Authentication |
+| [RFC-004](./docs/RFC-004.md) | Database Schema |
+| [RFC-005](./docs/RFC-005.md) | Core Analysis Engine |
+| [RFC-006](./docs/RFC-006.md) | Dockerization and Deployment |
 
 ---
 
